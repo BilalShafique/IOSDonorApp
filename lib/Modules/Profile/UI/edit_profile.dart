@@ -7,6 +7,7 @@ import 'package:donor_app/Shared/Utils/ddlLists.dart';
 import 'package:donor_app/Shared/Utils/general_alert.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -76,33 +77,71 @@ class EditProfileState extends State<EditProfile> {
     });
   }
 
+  void _showErrorSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.redAccent,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
   void _uploadImage() async {
     Navigator.pop(context);
 
     final picker = ImagePicker();
 
-    var pickedImage = await picker.pickMultiImage();
+    try {
+      final pickedImages = await picker.pickMultiImage();
 
-    setState(() {
-      if (pickedImage != null) {
-        for (int i = 0; i < pickedImage.length; i++) {
-          image.add(pickedImage[i]);
-        }
+      if (pickedImages == null || pickedImages.isEmpty) {
+        _showErrorSnackBar(context, 'No image selected.');
+        return;
       }
-    });
+
+      setState(() {
+        image.addAll(pickedImages);
+      });
+    } on PlatformException catch (e) {
+      debugPrint('❌ Image picker error: $e');
+      _showErrorSnackBar(
+        context,
+        'Unable to load this image. It might be stored in iCloud or in an unsupported format.',
+      );
+    } catch (e) {
+      debugPrint('❌ Unexpected error: $e');
+      _showErrorSnackBar(
+          context, 'Something went wrong while selecting images.');
+    }
   }
 
   void _takeCameraImage() async {
     Navigator.pop(context);
     final picker = ImagePicker();
 
-    var pickedImage = await picker.pickImage(source: ImageSource.camera);
+    try {
+      final pickedImage = await picker.pickImage(source: ImageSource.camera);
 
-    setState(() {
-      if (pickedImage != null) {
-        image.add(pickedImage);
+      if (pickedImage == null) {
+        _showErrorSnackBar(context, 'No image captured.');
+        return;
       }
-    });
+
+      setState(() {
+        image.add(pickedImage);
+      });
+    } on PlatformException catch (e) {
+      debugPrint('❌ Camera error: $e');
+      _showErrorSnackBar(
+        context,
+        'Unable to capture image. Please check camera permissions or storage space.',
+      );
+    } catch (e) {
+      debugPrint('❌ Unexpected error: $e');
+      _showErrorSnackBar(
+          context, 'Something went wrong while using the camera.');
+    }
   }
 
   void _chooseFile() async {
