@@ -33,11 +33,11 @@
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>NSCameraUsageDescription</key>
-	<string>This app requires access to your camera to take photos.</string>
+	<string>This app requires access to your camera so donors can take or update their profile photo within the NUST Donor Report app.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app needs photo library access to allow users to select and upload images.</string>
+	<string>This app requires access to your photo library so donors can choose an existing image for their profile photo.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>This app needs access to save selected photos.</string>
+	<string>This app requires access to save updated profile photos to your photo library after upload.</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
